@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://thymeleaf.com.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <head>
+        <title>Inicio</title>
+        <meta charset="UTF-8">
+    </head>
+
+    <body>
+
+        <header th:replace="layouts/layouts :: header"/><!--le indico la ruta-->
+
+        <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/agregar}">[[#{persona.crear}]]</a>
+        <!--El link de "crear persona" no se debe ver si el usuario no tiene el permiso-->
+        <div th:if="${listaPersonas!= null and !listaPersonas.empty}">
+            <table border="1">
+                <th>[[#{persona.nombre}]]</th>
+                <th>[[#{persona.apellido}]]</th>
+                <th>[[#{persona.email}]]</th>
+                <th>[[#{persona.telefono}]]</th>
+                <th sec:authorize="hasRole('ROLE_ADMIN')">[[#{accion.editar}]]</th>
+                <th sec:authorize="hasRole('ROLE_ADMIN')">[[#{accion.eliminar}]]</th>
+
+                <tr th:each="persona : ${listaPersonas}">
+                    <td th:text="${persona.nombre}">Muestra nombre</td>
+                    <td th:text="${persona.apellido}">Muestra apellido</td>
+                    <td th:text="${persona.email}">Muestra mail</td>
+                    <td th:text="${persona.telefono}">Muestra telefono</td>
+                    <td sec:authorize="hasRole('ROLE_ADMIN')" > <a th:href="@{/editar/} + ${persona.idPersona}"/>[[#{accion.editar}]]</td> <!-- Path variable -->
+                    <!-- <td><a th:href="@{/eliminar/} + ${persona.idPersona}" th:text="Eliminar"/></td>  Path variable -->
+                    <td sec:authorize="hasRole('ROLE_ADMIN')"> <a th:href="@{/eliminar(idPersona=${persona.idPersona})}"/>[[#{accion.eliminar}]]</td> <!-- Query parameter -->
+                </tr>
+
+            </table>
+        </div>
+        <div th:if= "${listaPersonas == null or listaPersonas.empty}">
+            [[#{persona.lista-vacia}]]
+        </div>
+
+        <footer th:replace="layouts/layouts :: footer"/>
+
+    </body>
+
+</html>
